@@ -97,3 +97,6 @@ for i in range(4):
     leo.mejorar_flota()
 #Llamar nuevamente a metodo mostrar_flota
 print(f"Mostrar flota despues:")
+leo.mostrar_flota()
+
+print("Fin del programa")
