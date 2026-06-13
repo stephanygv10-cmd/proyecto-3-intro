@@ -99,6 +99,4 @@ for i in range(4):
 print(f"Mostrar flota despues:")
 leo.mostrar_flota()
 
-
-
-# comentarios: mied
+print("Fin del programa")
