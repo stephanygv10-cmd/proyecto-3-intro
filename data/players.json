@@ -1,0 +1,26 @@
+{
+    "Stephany": {
+        "username": "Stephany",
+        "password": "luna",
+        "wins_defender": 0,
+        "wins_attacker": 0
+    },
+    "Stephany 2": {
+        "username": "Stephany 2",
+        "password": "luna",
+        "wins_defender": 0,
+        "wins_attacker": 0
+    },
+    "Alexa": {
+        "username": "Alexa",
+        "password": "buenosaires",
+        "wins_defender": 1,
+        "wins_attacker": 0
+    },
+    "Alexa2": {
+        "username": "Alexa2",
+        "password": "buenosaires2",
+        "wins_defender": 0,
+        "wins_attacker": 0
+    }
+}

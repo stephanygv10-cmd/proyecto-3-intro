@@ -4,6 +4,13 @@ Punto de entrada del juego Defensa y Asalto de Base.
 Ejecutar: python main.py
 """
 
+import sys
+import os
+
+# Asegura que Python encuentre los módulos src/ y ui/
+# sin importar desde qué carpeta se ejecute el script.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import tkinter as tk
 from ui.login_window   import LoginWindow
 from ui.faction_window import FactionWindow
@@ -18,7 +25,6 @@ root = tk.Tk()
 def on_game_over(winner: Player, role: str):
     """Actualiza victorias y vuelve al login para otra partida."""
     update_wins(winner.username, role)
-    # Reiniciar al login
     for widget in root.winfo_children():
         widget.destroy()
     LoginWindow(root, on_login_success)

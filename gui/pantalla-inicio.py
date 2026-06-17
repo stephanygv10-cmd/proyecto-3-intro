@@ -1,1 +1,0 @@
-print("Aqui va Tkinter para la pantalla de inicio")
