@@ -12,8 +12,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from src.players  import Player
 from src.factions import Faction
 from src.map_grid import MapGrid, Base
-from src.towers   import Tower, Wall, create_tower, TOWER_COSTS
-from src.units    import Unit, create_unit, UNIT_COSTS
+from src.towers   import Tower, Wall, create_tower, TOWER_COSTS, TOWER_SPECIAL_DESC
+from src.units    import Unit, create_unit, UNIT_COSTS, UNIT_SPECIAL_DESC
 from src.economy  import Economy
 
 
@@ -147,13 +147,32 @@ class GameWindow:
         # ── Forzar el tamaño final de la ventana DESPUÉS de armar todo ────────
         # (si se hace antes, la ventana heredada del login puede pisar este tamaño)
         self.root.update_idletasks()
+
+        # IMPORTANTE: como "side" usa pack_propagate(False), su altura
+        # "pedida" (winfo_reqheight) NO refleja la suma real de sus widgets
+        # internos, sino que queda atada a la altura del canvas del mapa.
+        # Si el panel lateral necesita más alto que el canvas (por ejemplo,
+        # al mostrar una ficha de torre/unidad), sus widgets de más abajo
+        # (botón de fase, log de eventos) se quedan sin espacio y Tkinter
+        # deja de dibujarlos, aunque el resto de la ventana tenga margen.
+        # Por eso medimos la altura real necesaria del panel lateral
+        # sumando sus hijos directamente, e incluimos esa medida en el
+        # cálculo del alto total de la ventana.
+        side_children_h = sum(
+            child.winfo_reqheight() for child in side.winfo_children()
+        )
+        side_needed_h = side_children_h + 2 * 10   # + pady del frame "side"
+
+        needed_w = self.root.winfo_reqwidth()
+        needed_h = max(self.root.winfo_reqheight(), side_needed_h + top.winfo_reqheight())
+
         sw = self.root.winfo_screenwidth()
         sh = self.root.winfo_screenheight()
-        w = min(960, sw - 40)
-        h = min(660, sh - 60)
+        w = min(needed_w + 10, sw - 40)   # pequeño margen de seguridad
+        h = min(needed_h + 20, sh - 60)
         x = (sw - w) // 2
         y = (sh - h) // 2
-        self.root.minsize(900, 600)
+        self.root.minsize(w, h)
         self.root.geometry(f"{w}x{h}+{x}+{y}")
 
     def _build_side_panel(self, parent):
@@ -210,13 +229,21 @@ class GameWindow:
         self.shop_buttons: dict[str, tk.Button] = {}
         self._build_shop_buttons()
 
-        # Ítem seleccionado
+        # Ítem seleccionado — contenedor de ALTURA FIJA para que el botón
+        # de fase y el log de abajo nunca pierdan su espacio, sin importar
+        # cuán largo sea el texto de la ficha (antes, una ficha larga
+        # empujaba el botón "Defensor listo" fuera del panel y Tkinter
+        # dejaba de dibujarlo por completo).
+        selected_container = tk.Frame(parent, bg=C["panel"], height=110)
+        selected_container.pack(fill="x", pady=8)
+        selected_container.pack_propagate(False)
+
         self.lbl_selected = tk.Label(
-            parent, text="Selecciona un ítem y\nhaz clic en el mapa",
+            selected_container, text="Selecciona un ítem y\nhaz clic en el mapa",
             font=FONT_SMALL, fg=C["text_dim"], bg=C["panel"],
-            justify="left", wraplength=230
+            justify="left", wraplength=230, anchor="n"
         )
-        self.lbl_selected.pack(fill="x", pady=8)
+        self.lbl_selected.pack(fill="both", expand=True)
 
         # Botón de acción de fase
         tk.Frame(parent, bg=C["grid_line"], height=1).pack(fill="x", pady=4)
@@ -507,7 +534,7 @@ class GameWindow:
     # ── Selección de ítem ─────────────────────────────────────────────────────
 
     def _select_item(self, key: str):
-        """Marca el ítem seleccionado en la tienda."""
+        """Marca el ítem seleccionado en la tienda y muestra su ficha completa."""
         self.selected_item = key
 
         # Resaltar botón activo
@@ -516,19 +543,43 @@ class GameWindow:
                        fg=C["bg"] if k == key else C["text"])
 
         if self.phase == "build":
-            cost = TOWER_COSTS.get(key, 0)
-            self.lbl_selected.config(
-                text=f"Seleccionado: {key}\nCosto: ${cost}\n"
-                     f"Clic en el mapa para colocar",
-                fg=C["selected"]
+            self._show_tower_info(key)
+        else:
+            self._show_unit_info(key)
+
+    def _show_tower_info(self, key: str):
+        """Construye y muestra la ficha de una torre o muro."""
+        if key == "Muro":
+            wall = Wall()
+            text = (
+                f"🧱 MURO — ${wall.cost}\n"
+                f"❤ HP: {wall.hp}\n"
+                f"Bloquea el paso de unidades.\n"
+                f"No ataca, solo absorbe daño."
             )
         else:
-            cost = UNIT_COSTS.get(key, 0)
-            self.lbl_selected.config(
-                text=f"Seleccionado: {key}\nCosto: ${cost}\n"
-                     f"Clic en fila 0 o 1 para colocar",
-                fg=C["selected"]
+            tower = create_tower(key)
+            text = (
+                f"🗼 TORRE {key.upper()} — ${tower.cost}\n"
+                f"❤ HP: {tower.hp}  ⚔ Daño: {tower.damage}  "
+                f"🎯 Alcance: {tower.attack_range}\n"
+                f"⏱ Especial cada {tower.special_cooldown} turnos:\n"
+                f"{TOWER_SPECIAL_DESC.get(key, '—')}"
             )
+
+        self.lbl_selected.config(text=text, fg=C["selected"])
+
+    def _show_unit_info(self, key: str):
+        """Construye y muestra la ficha de una unidad atacante."""
+        unit = create_unit(key)
+        text = (
+            f"⚔ {key.upper()} — ${unit.cost}\n"
+            f"❤ HP: {unit.hp}  ⚔ Daño: {unit.damage}  "
+            f"🏃 Vel: {unit.speed}\n"
+            f"⏱ Especial cada {unit.special_cooldown} turnos:\n"
+            f"{UNIT_SPECIAL_DESC.get(key, '—')}"
+        )
+        self.lbl_selected.config(text=text, fg=C["selected"])
 
     # ══════════════════════════════════════════════════════════════════════════
     # FASES DEL JUEGO
@@ -593,8 +644,17 @@ class GameWindow:
             self._check_round_end()
             return
 
-        # 1. Torres atacan a unidades en rango
+        # 1. Torres atacan a unidades en rango.
+        # Para que una sola unidad no concentre TODO el fuego de todas las
+        # torres del mapa (lo que la mataba antes de avanzar), pero sin
+        # eliminar la concentración de fuego por completo (que volvería
+        # trivial avanzar con muchas unidades baratas), se permite que
+        # como máximo 2 torres distintas compartan el mismo objetivo
+        # priorizado por turno. La 3ra torre en adelante busca otra
+        # amenaza viva en su rango si la hay.
         self.special_fx_cells.clear()
+        target_hit_count: dict[int, int] = {}   # id(unit) -> nº de torres que ya la golpearon
+        MAX_TOWERS_PER_TARGET = 2
 
         for tower in list(self.map.towers):
             if not tower.is_alive:
@@ -605,13 +665,20 @@ class GameWindow:
                 tower.tick()
                 continue
 
+            # Preferir unidades que aún no llegaron al límite de torres
+            # apuntándoles; si todas lo alcanzaron, atacar la más cercana.
+            free_targets = [u for u in targets
+                            if target_hit_count.get(id(u), 0) < MAX_TOWERS_PER_TARGET]
+            target = free_targets[0] if free_targets else targets[0]
+            target_hit_count[id(target)] = target_hit_count.get(id(target), 0) + 1
+
             if tower.special_ready:
-                msg = tower.use_special(targets, self.map.towers)
+                msg = tower.use_special([target], self.map.towers)
                 self._log(f"✨ {msg}")
                 self.special_fx_cells.add((tower.row, tower.col))
             else:
-                dmg = tower.attack(targets[0])
-                self._log(f"🗼 {tower.name} → {targets[0].name}: {dmg} dmg")
+                dmg = tower.attack(target)
+                self._log(f"🗼 {tower.name} → {target.name}: {dmg} dmg")
                 tower.tick()
 
         # 2. Unidades se mueven y atacan
@@ -620,6 +687,25 @@ class GameWindow:
                 continue
 
             unit.tick()
+
+            # Revisar PRIMERO si ya hay una defensa en rango desde la
+            # posición actual. Si la hay, atacar sin moverse este turno.
+            # (Antes se llamaba a move_unit() incondicionalmente, lo que
+            # podía desplazar a la unidad fuera de rango de un objetivo
+            # que ya tenía al alcance, dejándola sin atacar ese turno.)
+            defenses_before_move = self.map.defenses_in_range(unit.row, unit.col, 1)
+
+            if defenses_before_move:
+                target = defenses_before_move[0]
+                if unit.special_ready:
+                    msg = unit.use_special(defenses_before_move)
+                    self._log(f"⚡ {msg}")
+                    self.special_fx_cells.add((unit.row, unit.col))
+                else:
+                    dmg = unit.attack(target)
+                    self.eco_att.reward_damage_tower()
+                    self._log(f"⚔ {unit.name} → {target.name}: {dmg} dmg")
+                continue
 
             result_ok, result_msg = self.map.move_unit(unit)
 
@@ -633,7 +719,9 @@ class GameWindow:
                     self._end_round(winner="attacker")
                     return
             else:
-                # Atacar la primera defensa en rango
+                # Atacar la primera defensa en rango tras moverse
+                # (cubre el caso de que el movimiento la haya acercado
+                # lo suficiente como para atacar en el mismo turno).
                 defenses = self.map.defenses_in_range(unit.row, unit.col, 1)
                 if defenses:
                     target = defenses[0]

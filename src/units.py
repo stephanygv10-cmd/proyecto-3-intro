@@ -81,27 +81,35 @@ class Unit:
 
     def move_towards_base(self, base_row: int, base_col: int) -> tuple[int, int]:
         """
-        Calcula la nueva posición moviéndose hacia la base enemy.
-        Avanza 'speed' casillas en dirección a (base_row, base_col).
+        Calcula la nueva posición moviéndose hacia la base enemiga.
+        Avanza 'speed' casillas en dirección a (base_row, base_col),
+        combinando movimiento diagonal cuando es posible.
+
+        Se mueve en diagonal (fila y columna a la vez) en vez de
+        "primero columna, luego fila", para que unidades que entran
+        por los costados del mapa conserven su posición lateral en
+        vez de converger todas a la misma columna central. Esto
+        permite que varias unidades ataquen una torre desde ángulos
+        distintos en el mismo turno, en lugar de hacer fila india.
+
         Retorna (new_row, new_col) sin modificar el estado interno.
         El MapGrid es quien valida y aplica el movimiento.
         """
-        dr = base_row - self.row
-        dc = base_col - self.col
-
-        steps = self.speed
         new_row, new_col = self.row, self.col
+        steps = self.speed
 
-        # Moverse primero horizontalmente, luego verticalmente (pathfinding simple)
         while steps > 0:
+            dr = base_row - new_row
+            dc = base_col - new_col
+
+            if dr == 0 and dc == 0:
+                break
+
+            if dr != 0:
+                new_row += 1 if dr > 0 else -1
             if dc != 0:
                 new_col += 1 if dc > 0 else -1
-                dc = base_col - new_col
-            elif dr != 0:
-                new_row += 1 if dr > 0 else -1
-                dr = base_row - new_row
-            else:
-                break
+
             steps -= 1
 
         return new_row, new_col
@@ -255,6 +263,14 @@ UNIT_COSTS: dict[str, int] = {
     "Soldado":        Soldier().cost,
     "Tanque":         Tank().cost,
     "Unidad Rápida":  FastUnit().cost,
+}
+
+# Descripción corta de la habilidad especial de cada unidad, usada en la UI
+# para mostrarle al jugador qué hace antes de comprarla.
+UNIT_SPECIAL_DESC: dict[str, str] = {
+    "Soldado":        "Ataque doble: golpea 2 veces al mismo objetivo.",
+    "Tanque":         "Escudo temporal: reduce el daño recibido a la mitad por 2 turnos.",
+    "Unidad Rápida":  "Ráfaga: duplica su velocidad de movimiento por 1 turno.",
 }
 
 

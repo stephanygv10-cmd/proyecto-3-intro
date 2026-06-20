@@ -179,9 +179,12 @@ class MapGrid:
     def clean_dead(self) -> dict:
         """
         Elimina del mapa todos los objetos muertos (hp <= 0).
-        Retorna un resumen: {"towers": n, "walls": n, "units": n}
+        Retorna un resumen: {"towers": n, "walls": n, "units": n,
+        "dead_units": [Unit, ...]}
+        La lista "dead_units" permite, por ejemplo, dar recompensas
+        distintas según el tipo de unidad eliminada.
         """
-        removed = {"towers": 0, "walls": 0, "units": 0}
+        removed = {"towers": 0, "walls": 0, "units": 0, "dead_units": []}
 
         for obj_list, key in [(self.towers, "towers"),
                                (self.walls,  "walls"),
@@ -191,6 +194,8 @@ class MapGrid:
                 self.grid[obj.row][obj.col] = None
                 obj_list.remove(obj)
                 removed[key] += 1
+                if key == "units":
+                    removed["dead_units"].append(obj)
 
         return removed
 
@@ -218,7 +223,9 @@ class MapGrid:
             dc = self.BASE_COL - new_col
 
             if dr == 0 and dc == 0:
-                # Llegó a la base
+                # Ya estaba en la posición de la base (no debería ocurrir,
+                # la base ocupa su propia celda), por seguridad la removemos.
+                self.units.remove(unit) if unit in self.units else None
                 return True, "reached_base"
 
             next_row, next_col = new_row, new_col
@@ -235,9 +242,18 @@ class MapGrid:
                 new_row, new_col = next_row, next_col
                 self.grid[new_row][new_col] = unit
             elif isinstance(cell, Base):
-                # Llegó a la base
+                # Llegó a la base: la unidad ataca y se retira del campo.
+                # IMPORTANTE: además de liberar su celda en el grid, hay
+                # que sacarla de self.units. Si no, queda "fantasma": ya
+                # no aparece en el mapa, pero el bucle de combate sigue
+                # iterándola turno tras turno y move_unit() vuelve a
+                # devolver "reached_base" indefinidamente, golpeando la
+                # base sin parar y sin que ninguna torre pueda eliminarla
+                # (al no estar en el grid, units_in_range() no la detecta).
                 self.grid[new_row][new_col] = None
                 unit.row, unit.col = new_row, new_col
+                if unit in self.units:
+                    self.units.remove(unit)
                 return True, "reached_base"
             else:
                 # Obstáculo (torre, muro u otra unidad): se detiene

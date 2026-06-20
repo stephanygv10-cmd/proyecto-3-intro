@@ -13,6 +13,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from src.players import register_player, login_player, Player
+from ui.ranking_window import RankingWindow
 
 
 # ── Paleta de colores ──────────────────────────────────────────────────────
@@ -67,6 +68,18 @@ class LoginWindow:
         self.root.configure(bg=COLORS["bg"])
         self.root.resizable(False, False)
         self._center_window(480, 580)
+
+        # ── Botón de Ranking (esquina superior derecha) ──
+        self.btn_ranking = tk.Button(
+            self.root, text="🏆 Ranking",
+            font=FONT_SMALL,
+            bg=COLORS["panel"], fg=COLORS["gold"],
+            activebackground=COLORS["gold"], activeforeground=COLORS["bg"],
+            relief="flat", bd=0, padx=10, pady=4,
+            cursor="hand2",
+            command=self._open_ranking
+        )
+        self.btn_ranking.place(relx=1.0, x=-14, y=14, anchor="ne")
 
         # ── Título del juego ──
         title_frame = tk.Frame(self.root, bg=COLORS["bg"])
@@ -254,6 +267,10 @@ class LoginWindow:
     def _proceed_to_game(self):
         """Destruye la ventana de login y llama al callback con los dos jugadores."""
         self.on_login_success(self.players[0], self.players[1])
+
+    def _open_ranking(self):
+        """Abre la ventana de ranking (top 5 defensores / atacantes) sin afectar el login."""
+        RankingWindow(self.root)
 
     # ── Utilidades ───────────────────────────────────────────────────────────
 

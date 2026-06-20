@@ -14,13 +14,13 @@
     "stephany": {
         "username": "stephany",
         "password": "luna",
-        "wins_defender": 2,
+        "wins_defender": 5,
         "wins_attacker": 0
     },
     "heylin": {
         "username": "heylin",
         "password": "luna",
         "wins_defender": 0,
-        "wins_attacker": 1
+        "wins_attacker": 2
     }
 }

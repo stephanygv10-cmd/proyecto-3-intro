@@ -221,9 +221,9 @@ class Wall:
 
     def __init__(self):
         self.name = "Muro"
-        self.cost = 20
-        self.hp = 60
-        self.max_hp = 60
+        self.cost = 30
+        self.hp = 50
+        self.max_hp = 50
         self.row = -1
         self.col = -1
 
@@ -253,6 +253,15 @@ TOWER_COSTS: dict[str, int] = {
     "Pesada":  HeavyTower().cost,
     "Mágica":  MagicTower().cost,
     "Muro":    Wall().cost,
+}
+
+# Descripción corta de la habilidad especial de cada torre, usada en la UI
+# para mostrarle al jugador qué hace antes de comprarla.
+TOWER_SPECIAL_DESC: dict[str, str] = {
+    "Básica": "Disparo doble: ataca 2 veces al mismo objetivo.",
+    "Pesada": "Daño en área: golpea a todas las unidades en rango.",
+    "Mágica": "Congelar: paraliza a una unidad 1 turno extra.",
+    "Muro":   "Sin habilidad. Solo bloquea el paso y absorbe daño.",
 }
 
 
