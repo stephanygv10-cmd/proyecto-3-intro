@@ -3,7 +3,13 @@ main.py
 Punto de entrada del juego Defensa y Asalto de Base.
 Ejecutar: python main.py
 """
-"hola"
+
+import sys
+import os
+
+# Asegura que Python encuentre los módulos src/ y ui/
+# sin importar desde qué carpeta se ejecute el script.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import sys
 import os
