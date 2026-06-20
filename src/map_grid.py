@@ -179,12 +179,9 @@ class MapGrid:
     def clean_dead(self) -> dict:
         """
         Elimina del mapa todos los objetos muertos (hp <= 0).
-        Retorna un resumen: {"towers": n, "walls": n, "units": n,
-                              "dead_units": [Unit, ...]}
-        'dead_units' permite calcular la recompensa correcta por cada
-        unidad eliminada según su tipo, en vez de asumir un valor fijo.
+        Retorna un resumen: {"towers": n, "walls": n, "units": n}
         """
-        removed = {"towers": 0, "walls": 0, "units": 0, "dead_units": []}
+        removed = {"towers": 0, "walls": 0, "units": 0}
 
         for obj_list, key in [(self.towers, "towers"),
                                (self.walls,  "walls"),
@@ -194,8 +191,6 @@ class MapGrid:
                 self.grid[obj.row][obj.col] = None
                 obj_list.remove(obj)
                 removed[key] += 1
-                if key == "units":
-                    removed["dead_units"].append(obj)
 
         return removed
 

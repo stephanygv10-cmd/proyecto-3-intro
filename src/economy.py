@@ -4,8 +4,10 @@ Gestiona el dinero de cada jugador durante la partida.
 """
 
 # Dinero inicial por ronda
-INITIAL_MONEY_DEFENDER = 200
-INITIAL_MONEY_ATTACKER = 180
+# El atacante recibe más dinero base porque atacar (romper muros + avanzar)
+# es más caro por unidad que defender (un muro barato bloquea mucho HP).
+INITIAL_MONEY_DEFENDER = 180
+INITIAL_MONEY_ATTACKER = 200
 
 # Dinero extra por ronda acumulada (se suma a partir de ronda 2)
 ROUND_BONUS = 30
@@ -18,10 +20,15 @@ KILL_REWARD = {
 }
 
 # Recompensas para el atacante por daño
-DAMAGE_REWARD_PER_HIT  = 5    # por dañar una torre o muro
-TOWER_DESTROY_REWARD   = 25   # por destruir una torre
-WALL_DESTROY_REWARD    = 10   # por destruir un muro
-BASE_DAMAGE_REWARD     = 2    # por cada punto de daño a la base
+DAMAGE_REWARD_PER_HIT  = 8    # por dañar una torre o muro
+TOWER_DESTROY_REWARD   = 35   # por destruir una torre
+WALL_DESTROY_REWARD    = 20   # por destruir un muro
+BASE_DAMAGE_REWARD     = 1    # por cada punto de daño a la base
+                               # (antes 3: con torres pesadas de 30 dmg eso
+                               # daba $90 por golpe, más que el costo de la
+                               # torre que lo causó. Con 1, el bono queda
+                               # proporcional sin ser la fuente principal
+                               # de ingresos del atacante)
 
 
 class Economy:

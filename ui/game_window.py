@@ -18,7 +18,7 @@ from src.economy  import Economy
 
 
 # ── Dimensiones del mapa ──────────────────────────────────────────────────────
-CELL_SIZE   = 52          # píxeles por casilla
+CELL_SIZE   = 44          # píxeles por casilla
 GRID_ROWS   = 10
 GRID_COLS   = 10
 CANVAS_W    = CELL_SIZE * GRID_COLS
@@ -44,12 +44,12 @@ C = {
     "attacker_row": "#2A1A1A",
 }
 
-FONT_TITLE  = ("Courier New", 13, "bold")
-FONT_LABEL  = ("Courier New", 10, "bold")
-FONT_SMALL  = ("Courier New", 9)
-FONT_BTN    = ("Courier New", 9, "bold")
-FONT_CELL   = ("Courier New", 18)
-FONT_MINI   = ("Courier New", 7)
+FONT_TITLE  = ("Courier New", 11, "bold")
+FONT_LABEL  = ("Courier New", 9, "bold")
+FONT_SMALL  = ("Courier New", 8)
+FONT_BTN    = ("Courier New", 8, "bold")
+FONT_CELL   = ("Courier New", 15)
+FONT_MINI   = ("Courier New", 6)
 
 
 class GameWindow:
@@ -87,6 +87,10 @@ class GameWindow:
         # Log de eventos
         self.log_lines: list[str] = []
 
+        # Celdas que activaron su habilidad especial en el último turno
+        # (para resaltarlas visualmente en el mapa con un anillo dorado).
+        self.special_fx_cells: set[tuple[int, int]] = set()
+
         self._build_ui()
         self._refresh_map()
         self._set_phase("build")
@@ -98,7 +102,7 @@ class GameWindow:
     def _build_ui(self):
         self.root.title("Defensa y Asalto de Base")
         self.root.configure(bg=C["bg"])
-        self.root.resizable(False, False)
+        self.root.resizable(True, True)
 
         # ── Barra superior de estado ──────────────────────────────────────────
         top = tk.Frame(self.root, bg=C["panel"], pady=6)
@@ -122,7 +126,7 @@ class GameWindow:
         body.pack(fill="both", expand=True)
 
         # Canvas del mapa
-        map_frame = tk.Frame(body, bg=C["bg"], padx=10, pady=10)
+        map_frame = tk.Frame(body, bg=C["bg"], padx=4, pady=4)
         map_frame.pack(side="left")
 
         self.canvas = tk.Canvas(
@@ -133,12 +137,24 @@ class GameWindow:
         self.canvas.bind("<Button-1>", self._on_cell_click)
         self.canvas.bind("<Motion>",   self._on_hover)
 
-        # Panel lateral derecho
-        side = tk.Frame(body, bg=C["panel"], width=220, padx=12, pady=10)
+        # Panel lateral derecho (ancho fijo, no compite por espacio con el mapa)
+        side = tk.Frame(body, bg=C["panel"], width=260, padx=12, pady=10)
         side.pack(side="left", fill="y")
         side.pack_propagate(False)
 
         self._build_side_panel(side)
+
+        # ── Forzar el tamaño final de la ventana DESPUÉS de armar todo ────────
+        # (si se hace antes, la ventana heredada del login puede pisar este tamaño)
+        self.root.update_idletasks()
+        sw = self.root.winfo_screenwidth()
+        sh = self.root.winfo_screenheight()
+        w = min(960, sw - 40)
+        h = min(660, sh - 60)
+        x = (sw - w) // 2
+        y = (sh - h) // 2
+        self.root.minsize(900, 600)
+        self.root.geometry(f"{w}x{h}+{x}+{y}")
 
     def _build_side_panel(self, parent):
         """Construye el panel lateral con info de jugadores, tienda y log."""
@@ -152,7 +168,7 @@ class GameWindow:
         tk.Label(info_frame,
                  text=f"🛡 {self.player_def.username} (Defensor)",
                  font=FONT_LABEL, fg=def_color, bg=C["panel"],
-                 anchor="w").pack(fill="x")
+                 anchor="w", wraplength=230, justify="left").pack(fill="x")
         self.lbl_money_def = tk.Label(
             info_frame, text="", font=FONT_SMALL,
             fg=C["text_dim"], bg=C["panel"], anchor="w"
@@ -166,7 +182,7 @@ class GameWindow:
         tk.Label(info_frame,
                  text=f"⚔ {self.player_att.username} (Atacante)",
                  font=FONT_LABEL, fg=att_color, bg=C["panel"],
-                 anchor="w").pack(fill="x")
+                 anchor="w", wraplength=230, justify="left").pack(fill="x")
         self.lbl_money_att = tk.Label(
             info_frame, text="", font=FONT_SMALL,
             fg=C["text_dim"], bg=C["panel"], anchor="w"
@@ -198,7 +214,7 @@ class GameWindow:
         self.lbl_selected = tk.Label(
             parent, text="Selecciona un ítem y\nhaz clic en el mapa",
             font=FONT_SMALL, fg=C["text_dim"], bg=C["panel"],
-            justify="left", wraplength=196
+            justify="left", wraplength=230
         )
         self.lbl_selected.pack(fill="x", pady=8)
 
@@ -288,6 +304,13 @@ class GameWindow:
                     fill=bg, outline=C["grid_line"], width=1
                 )
 
+                # Destello visual: la celda usó su habilidad especial este turno
+                if (r, c) in self.special_fx_cells:
+                    self.canvas.create_rectangle(
+                        x0 + 2, y0 + 2, x1 - 2, y1 - 2,
+                        outline=C["selected"], width=3
+                    )
+
                 obj = self.map.grid[r][c]
                 if obj is None:
                     continue
@@ -319,6 +342,14 @@ class GameWindow:
                     frozen = " ❄" if obj.is_frozen else ""
                     self._draw_cell_content(cx, cy, sym, color,
                                             f"{obj.hp}/{obj.max_hp}{frozen}")
+
+                # Etiqueta de texto sobre celdas que activaron su especial
+                if (r, c) in self.special_fx_cells:
+                    self.canvas.create_text(
+                        cx, y0 + 9, text="✨ ESPECIAL",
+                        font=("Courier New", 7, "bold"),
+                        fill=C["selected"]
+                    )
 
         # Coordenadas de bordes
         self._draw_grid_labels()
@@ -563,6 +594,8 @@ class GameWindow:
             return
 
         # 1. Torres atacan a unidades en rango
+        self.special_fx_cells.clear()
+
         for tower in list(self.map.towers):
             if not tower.is_alive:
                 continue
@@ -575,6 +608,7 @@ class GameWindow:
             if tower.special_ready:
                 msg = tower.use_special(targets, self.map.towers)
                 self._log(f"✨ {msg}")
+                self.special_fx_cells.add((tower.row, tower.col))
             else:
                 dmg = tower.attack(targets[0])
                 self._log(f"🗼 {tower.name} → {targets[0].name}: {dmg} dmg")
@@ -606,6 +640,7 @@ class GameWindow:
                     if unit.special_ready:
                         msg = unit.use_special(defenses)
                         self._log(f"⚡ {msg}")
+                        self.special_fx_cells.add((unit.row, unit.col))
                     else:
                         dmg = unit.attack(target)
                         self.eco_att.reward_damage_tower()
@@ -623,9 +658,11 @@ class GameWindow:
             self._log(f"💀 {removed['walls']} muro(s) destruido(s) (+${reward} atacante)")
 
         if removed["units"] > 0:
-            for _ in range(removed["units"]):
-                reward = self.eco_def.reward_kill("Soldado")  # approx
-            self._log(f"☠ {removed['units']} unidad(es) eliminada(s) (+${reward} defensor)")
+            total_reward = 0
+            for dead_unit in removed["dead_units"]:
+                total_reward += self.eco_def.reward_kill(dead_unit.name)
+            self._log(f"☠ {removed['units']} unidad(es) eliminada(s) "
+                       f"(+${total_reward} defensor)")
 
         self._refresh_map()
         self._check_round_end()
