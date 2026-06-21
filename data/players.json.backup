@@ -1,8 +1,20 @@
 {
-    "stephany 2": {
+    "Stephany": {
+        "username": "Stephany",
+        "password": "luna",
+        "wins_defender": 0,
+        "wins_attacker": 0
+    },
+    "Stephany 2": {
         "username": "Stephany 2",
         "password": "luna",
         "wins_defender": 0,
+        "wins_attacker": 0
+    },
+    "stephany": {
+        "username": "stephany",
+        "password": "luna",
+        "wins_defender": 5,
         "wins_attacker": 0
     },
     "heylin": {
@@ -21,12 +33,6 @@
         "username": "valeria",
         "password": "luna",
         "wins_defender": 0,
-        "wins_attacker": 0
-    },
-    "stephany": {
-        "username": "Stephany",
-        "password": "luna",
-        "wins_defender": 5,
         "wins_attacker": 0
     }
 }

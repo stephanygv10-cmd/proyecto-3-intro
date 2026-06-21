@@ -74,6 +74,16 @@ def _save_all(data: dict[str, dict]) -> None:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
 
+def _normalize_key(username: str) -> str:
+    """
+    Genera la clave interna de un usuario, insensible a mayúsculas y a
+    espacios extra (' Stephany', 'stephany', 'STEPHANY' deben ser el
+    mismo jugador). El nombre tal como lo escribió el usuario se sigue
+    guardando en 'username' para mostrarlo en pantalla.
+    """
+    return " ".join(username.strip().split()).lower()
+
+
 def register_player(username: str, password: str) -> tuple[bool, str]:
     """
     Registra un nuevo jugador.
@@ -82,7 +92,7 @@ def register_player(username: str, password: str) -> tuple[bool, str]:
         (True, "OK")               si el registro fue exitoso.
         (False, mensaje de error)  si el usuario ya existe o los datos son inválidos.
     """
-    username = username.strip()
+    username = " ".join(username.strip().split())
     password = password.strip()
 
     if not username or not password:
@@ -95,12 +105,13 @@ def register_player(username: str, password: str) -> tuple[bool, str]:
         return False, "La contraseña debe tener al menos 4 caracteres."
 
     data = _load_all()
+    key = _normalize_key(username)
 
-    if username in data:
+    if key in data:
         return False, f"El usuario '{username}' ya existe."
 
     player = Player(username, password)
-    data[username] = player.to_dict()
+    data[key] = player.to_dict()
     _save_all(data)
     return True, "OK"
 
@@ -113,15 +124,16 @@ def login_player(username: str, password: str) -> tuple[bool, str | Player]:
         (True, Player)             si las credenciales son correctas.
         (False, mensaje de error)  si el usuario no existe o la contraseña es incorrecta.
     """
-    username = username.strip()
+    username = " ".join(username.strip().split())
     password = password.strip()
 
     data = _load_all()
+    key = _normalize_key(username)
 
-    if username not in data:
+    if key not in data:
         return False, f"El usuario '{username}' no existe."
 
-    stored = data[username]
+    stored = data[key]
     if stored["password"] != password:
         return False, "Contraseña incorrecta."
 
@@ -137,13 +149,14 @@ def update_wins(username: str, role: str) -> None:
         role (str): 'defender' o 'attacker'.
     """
     data = _load_all()
-    if username not in data:
+    key = _normalize_key(username)
+    if key not in data:
         return
 
     if role == "defender":
-        data[username]["wins_defender"] += 1
+        data[key]["wins_defender"] += 1
     elif role == "attacker":
-        data[username]["wins_attacker"] += 1
+        data[key]["wins_attacker"] += 1
 
     _save_all(data)
 
