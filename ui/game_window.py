@@ -17,14 +17,12 @@ from src.units    import Unit, create_unit, UNIT_COSTS, UNIT_SPECIAL_DESC
 from src.economy  import Economy
 
 
-# ── Dimensiones del mapa ──────────────────────────────────────────────────────
 CELL_SIZE   = 44          # píxeles por casilla
 GRID_ROWS   = 10
 GRID_COLS   = 10
 CANVAS_W    = CELL_SIZE * GRID_COLS
 CANVAS_H    = CELL_SIZE * GRID_ROWS
 
-# ── Colores base (se sobreescriben con los de la facción) ──────────────────────
 C = {
     "bg":        "#1A1A2E",
     "panel":     "#16213E",
@@ -95,16 +93,14 @@ class GameWindow:
         self._refresh_map()
         self._set_phase("build")
 
-    # ══════════════════════════════════════════════════════════════════════════
     # CONSTRUCCIÓN DE LA UI
-    # ══════════════════════════════════════════════════════════════════════════
 
     def _build_ui(self):
         self.root.title("Defensa y Asalto de Base")
         self.root.configure(bg=C["bg"])
         self.root.resizable(True, True)
 
-        # ── Barra superior de estado ──────────────────────────────────────────
+        #Barra superior de estado 
         top = tk.Frame(self.root, bg=C["panel"], pady=6)
         top.pack(fill="x")
 
@@ -121,7 +117,7 @@ class GameWindow:
                                    fg=C["text"], bg=C["panel"])
         self.lbl_score.pack(side="right", padx=16)
 
-        # ── Cuerpo principal ─────────────────────────────────────────────────
+        #  Cuerpo principal 
         body = tk.Frame(self.root, bg=C["bg"])
         body.pack(fill="both", expand=True)
 
@@ -144,7 +140,7 @@ class GameWindow:
 
         self._build_side_panel(side)
 
-        # ── Forzar el tamaño final de la ventana DESPUÉS de armar todo ────────
+        #  Forzar el tamaño final de la ventana DESPUÉS de armar todo 
         # (si se hace antes, la ventana heredada del login puede pisar este tamaño)
         self.root.update_idletasks()
 
@@ -178,7 +174,7 @@ class GameWindow:
     def _build_side_panel(self, parent):
         """Construye el panel lateral con info de jugadores, tienda y log."""
 
-        # ── Info jugadores ────────────────────────────────────────────────────
+        #  Info jugadores 
         info_frame = tk.Frame(parent, bg=C["panel"])
         info_frame.pack(fill="x", pady=(0, 8))
 
@@ -216,7 +212,7 @@ class GameWindow:
                                      fg=C["text"], bg=C["panel"], anchor="w")
         self.lbl_base_hp.pack(fill="x", pady=(0, 6))
 
-        # ── Tienda ────────────────────────────────────────────────────────────
+        #  Tienda 
         tk.Frame(parent, bg=C["grid_line"], height=1).pack(fill="x", pady=4)
         self.lbl_shop_title = tk.Label(parent, text="🏪 Tienda",
                                         font=FONT_LABEL, fg=C["gold"],
@@ -238,35 +234,29 @@ class GameWindow:
         selected_container.pack(fill="x", pady=8)
         selected_container.pack_propagate(False)
 
-        self.lbl_selected = tk.Label(
-            selected_container, text="Selecciona un ítem y\nhaz clic en el mapa",
+        self.lbl_selected = tk.Label(selected_container, text="Selecciona un ítem y\nhaz clic en el mapa",
             font=FONT_SMALL, fg=C["text_dim"], bg=C["panel"],
-            justify="left", wraplength=230, anchor="n"
-        )
+            justify="left", wraplength=230, anchor="n")
         self.lbl_selected.pack(fill="both", expand=True)
 
         # Botón de acción de fase
         tk.Frame(parent, bg=C["grid_line"], height=1).pack(fill="x", pady=4)
-        self.btn_phase = tk.Button(
-            parent, text="", font=FONT_BTN,
+        self.btn_phase = tk.Button(parent, text="", font=FONT_BTN,
             bg=C["success"], fg=C["bg"],
             activebackground=C["text"], activeforeground=C["bg"],
             relief="flat", bd=0, pady=8, cursor="hand2",
-            command=self._advance_phase
-        )
+            command=self._advance_phase)
         self.btn_phase.pack(fill="x", pady=4)
 
-        # ── Log de eventos ────────────────────────────────────────────────────
+        #  Log de eventos 
         tk.Frame(parent, bg=C["grid_line"], height=1).pack(fill="x", pady=4)
         tk.Label(parent, text="📋 Eventos", font=FONT_LABEL,
                  fg=C["text_dim"], bg=C["panel"], anchor="w").pack(fill="x")
 
-        self.log_text = tk.Text(
-            parent, height=10, font=("Courier New", 8),
+        self.log_text = tk.Text(parent, height=10, font=("Courier New", 8),
             bg=C["bg"], fg=C["text_dim"],
             relief="flat", state="disabled",
-            wrap="word"
-        )
+            wrap="word")
         self.log_text.pack(fill="both", expand=True, pady=(2, 0))
 
     def _build_shop_buttons(self):
@@ -276,35 +266,27 @@ class GameWindow:
         self.shop_buttons.clear()
 
         if self.phase == "build":
-            items = {
-                "Básica":  f"Torre Básica  ${TOWER_COSTS['Básica']}",
+            items = {"Básica":  f"Torre Básica  ${TOWER_COSTS['Básica']}",
                 "Pesada":  f"Torre Pesada  ${TOWER_COSTS['Pesada']}",
                 "Mágica":  f"Torre Mágica  ${TOWER_COSTS['Mágica']}",
-                "Muro":    f"Muro          ${TOWER_COSTS['Muro']}",
-            }
+                "Muro":    f"Muro          ${TOWER_COSTS['Muro']}",}
         else:  # attack
-            items = {
-                "Soldado":       f"Soldado       ${UNIT_COSTS['Soldado']}",
+            items = {"Soldado":       f"Soldado       ${UNIT_COSTS['Soldado']}",
                 "Tanque":        f"Tanque        ${UNIT_COSTS['Tanque']}",
-                "Unidad Rápida": f"Unid. Rápida  ${UNIT_COSTS['Unidad Rápida']}",
-            }
+                "Unidad Rápida": f"Unid. Rápida  ${UNIT_COSTS['Unidad Rápida']}",}
 
         for key, label in items.items():
-            btn = tk.Button(
-                self.shop_frame, text=label,
+            btn = tk.Button(self.shop_frame, text=label,
                 font=FONT_SMALL, anchor="w",
                 bg=C["cell_odd"], fg=C["text"],
                 activebackground=C["hover"], activeforeground=C["text"],
                 relief="flat", bd=0, pady=5, padx=6,
                 cursor="hand2",
-                command=lambda k=key: self._select_item(k)
-            )
+                command=lambda k=key: self._select_item(k))
             btn.pack(fill="x", pady=2)
             self.shop_buttons[key] = btn
 
-    # ══════════════════════════════════════════════════════════════════════════
     # RENDERIZADO DEL MAPA
-    # ══════════════════════════════════════════════════════════════════════════
 
     def _refresh_map(self):
         """Redibuja todo el canvas del mapa."""
@@ -326,17 +308,13 @@ class GameWindow:
                 else:
                     bg = C["cell_odd"]
 
-                self.canvas.create_rectangle(
-                    x0, y0, x1, y1,
-                    fill=bg, outline=C["grid_line"], width=1
-                )
+                self.canvas.create_rectangle(x0, y0, x1, y1,
+                    fill=bg, outline=C["grid_line"], width=1)
 
                 # Destello visual: la celda usó su habilidad especial este turno
                 if (r, c) in self.special_fx_cells:
-                    self.canvas.create_rectangle(
-                        x0 + 2, y0 + 2, x1 - 2, y1 - 2,
-                        outline=C["selected"], width=3
-                    )
+                    self.canvas.create_rectangle(x0 + 2, y0 + 2, x1 - 2, y1 - 2,
+                        outline=C["selected"], width=3)
 
                 obj = self.map.grid[r][c]
                 if obj is None:
@@ -371,12 +349,10 @@ class GameWindow:
                                             f"{obj.hp}/{obj.max_hp}{frozen}")
 
                 # Etiqueta de texto sobre celdas que activaron su especial
-                if (r, c) in self.special_fx_cells:
-                    self.canvas.create_text(
+                if (r, c) in self.special_fx_cells:self.canvas.create_text(
                         cx, y0 + 9, text="✨ ESPECIAL",
                         font=("Courier New", 7, "bold"),
-                        fill=C["selected"]
-                    )
+                        fill=C["selected"])
 
         # Coordenadas de bordes
         self._draw_grid_labels()
@@ -385,10 +361,8 @@ class GameWindow:
     def _draw_cell_content(self, cx, cy, symbol, color, hp_text=""):
         """Dibuja símbolo + barra de HP en una celda."""
         # Fondo de color suave
-        self.canvas.create_rectangle(
-            cx - 22, cy - 22, cx + 22, cy + 22,
-            fill=color, outline="", stipple="gray25"
-        )
+        self.canvas.create_rectangle(cx - 22, cy - 22, cx + 22, cy + 22,
+            fill=color, outline="", stipple="gray25")
         # Símbolo
         self.canvas.create_text(cx, cy - 4, text=symbol,
                                  font=FONT_CELL, fill="white")
@@ -410,24 +384,14 @@ class GameWindow:
 
     def _refresh_side_info(self):
         """Actualiza los labels del panel lateral."""
-        self.lbl_money_def.config(
-            text=f"💰 ${self.eco_def.money}"
-        )
-        self.lbl_money_att.config(
-            text=f"💰 ${self.eco_att.money}"
-        )
+        self.lbl_money_def.config(text=f"💰 ${self.eco_def.money}")
+        self.lbl_money_att.config(text=f"💰 ${self.eco_att.money}")
         base = self.map.base
-        self.lbl_base_hp.config(
-            text=f"❤ {base.hp} / {base.max_hp} HP"
-        )
+        self.lbl_base_hp.config(text=f"❤ {base.hp} / {base.max_hp} HP")
         self.lbl_round.config(text=f"Ronda {self.round}")
-        self.lbl_score.config(
-            text=f"🛡 {self.wins_def}  —  ⚔ {self.wins_att}"
-        )
+        self.lbl_score.config(text=f"🛡 {self.wins_def}  —  ⚔ {self.wins_att}")
 
-    # ══════════════════════════════════════════════════════════════════════════
     # INTERACCIÓN CON EL MAPA
-    # ══════════════════════════════════════════════════════════════════════════
 
     def _on_cell_click(self, event):
         """Maneja el clic en el canvas: coloca el ítem seleccionado."""
@@ -455,10 +419,7 @@ class GameWindow:
         x0 = col * CELL_SIZE
         y0 = row * CELL_SIZE
         self.canvas.delete("hover_rect")
-        self.canvas.create_rectangle(
-            x0 + 1, y0 + 1, x0 + CELL_SIZE - 1, y0 + CELL_SIZE - 1,
-            outline=C["selected"], width=2, tags="hover_rect"
-        )
+        self.canvas.create_rectangle(x0 + 1, y0 + 1, x0 + CELL_SIZE - 1, y0 + CELL_SIZE - 1,outline=C["selected"], width=2, tags="hover_rect")
 
     def _show_cell_info(self, row, col):
         """Muestra info del objeto en la celda en el log."""
@@ -468,7 +429,7 @@ class GameWindow:
         else:
             self._log(f"Celda ({row},{col}): {repr(obj)}")
 
-    # ── Colocación de defensas ────────────────────────────────────────────────
+    #  Colocación de defensas 
 
     def _place_defense(self, row, col):
         """Intenta colocar el ítem seleccionado en (row, col) durante fase build."""
@@ -503,7 +464,7 @@ class GameWindow:
 
         self._refresh_map()
 
-    # ── Colocación de unidades ────────────────────────────────────────────────
+    #  Colocación de unidades 
 
     def _place_unit_click(self, row, col):
         """Intenta colocar una unidad en (row, col) durante fase attack."""
@@ -531,7 +492,7 @@ class GameWindow:
 
         self._refresh_map()
 
-    # ── Selección de ítem ─────────────────────────────────────────────────────
+    #  Selección de ítem 
 
     def _select_item(self, key: str):
         """Marca el ítem seleccionado en la tienda y muestra su ficha completa."""
@@ -551,39 +512,31 @@ class GameWindow:
         """Construye y muestra la ficha de una torre o muro."""
         if key == "Muro":
             wall = Wall()
-            text = (
-                f"🧱 MURO — ${wall.cost}\n"
+            text = (f"🧱 MURO — ${wall.cost}\n"
                 f"❤ HP: {wall.hp}\n"
                 f"Bloquea el paso de unidades.\n"
-                f"No ataca, solo absorbe daño."
-            )
+                f"No ataca, solo absorbe daño.")
         else:
             tower = create_tower(key)
-            text = (
-                f"🗼 TORRE {key.upper()} — ${tower.cost}\n"
+            text = (f"🗼 TORRE {key.upper()} — ${tower.cost}\n"
                 f"❤ HP: {tower.hp}  ⚔ Daño: {tower.damage}  "
                 f"🎯 Alcance: {tower.attack_range}\n"
                 f"⏱ Especial cada {tower.special_cooldown} turnos:\n"
-                f"{TOWER_SPECIAL_DESC.get(key, '—')}"
-            )
+                f"{TOWER_SPECIAL_DESC.get(key, '—')}")
 
         self.lbl_selected.config(text=text, fg=C["selected"])
 
     def _show_unit_info(self, key: str):
         """Construye y muestra la ficha de una unidad atacante."""
         unit = create_unit(key)
-        text = (
-            f"⚔ {key.upper()} — ${unit.cost}\n"
+        text = (f"⚔ {key.upper()} — ${unit.cost}\n"
             f"❤ HP: {unit.hp}  ⚔ Daño: {unit.damage}  "
             f"🏃 Vel: {unit.speed}\n"
             f"⏱ Especial cada {unit.special_cooldown} turnos:\n"
-            f"{UNIT_SPECIAL_DESC.get(key, '—')}"
-        )
+            f"{UNIT_SPECIAL_DESC.get(key, '—')}")
         self.lbl_selected.config(text=text, fg=C["selected"])
 
-    # ══════════════════════════════════════════════════════════════════════════
     # FASES DEL JUEGO
-    # ══════════════════════════════════════════════════════════════════════════
 
     def _set_phase(self, phase: str):
         """Cambia la fase y actualiza la UI."""
@@ -592,26 +545,18 @@ class GameWindow:
 
         if phase == "build":
             self.lbl_phase.config(text="📐 FASE: Construcción del Defensor")
-            self.btn_phase.config(
-                text=f"✔ Defensor listo → Fase de Ataque",
-                bg=C["success"]
-            )
-            self.lbl_selected.config(
-                text=f"Turno de: {self.player_def.username}\n"
+            self.btn_phase.config(text=f"✔ Defensor listo → Fase de Ataque",
+                bg=C["success"])
+            self.lbl_selected.config(text=f"Turno de: {self.player_def.username}\n"
                      f"Coloca torres y muros.",
-                fg=C["text_dim"]
-            )
+                fg=C["text_dim"])
         elif phase == "attack":
             self.lbl_phase.config(text="⚔ FASE: Despliegue del Atacante")
-            self.btn_phase.config(
-                text=f"⚡ Atacante listo → ¡COMBATE!",
-                bg=C["accent"]
-            )
-            self.lbl_selected.config(
-                text=f"Turno de: {self.player_att.username}\n"
+            self.btn_phase.config(text=f"⚡ Atacante listo → ¡COMBATE!",
+                bg=C["accent"])
+            self.lbl_selected.config(text=f"Turno de: {self.player_att.username}\n"
                      f"Coloca unidades en filas 0-1.",
-                fg=C["text_dim"]
-            )
+                fg=C["text_dim"])
         elif phase == "combat":
             self.lbl_phase.config(text="💥 FASE: Combate")
             self.btn_phase.config(text="▶ Siguiente turno", bg=C["gold"])
@@ -633,9 +578,7 @@ class GameWindow:
         elif self.phase == "combat":
             self._run_combat_turn()
 
-    # ══════════════════════════════════════════════════════════════════════════
     # COMBATE (turno a turno)
-    # ══════════════════════════════════════════════════════════════════════════
 
     def _run_combat_turn(self):
         """Ejecuta un turno de combate y actualiza el mapa."""
@@ -645,7 +588,7 @@ class GameWindow:
             return
 
         # 1. Torres atacan a unidades en rango.
-        # Para que una sola unidad no concentre TODO el fuego de todas las
+        # Para que una sola unidad no concentre todo el fuego de todas las
         # torres del mapa (lo que la mataba antes de avanzar), pero sin
         # eliminar la concentración de fuego por completo (que volvería
         # trivial avanzar con muchas unidades baratas), se permite que
@@ -816,9 +759,7 @@ class GameWindow:
         if self.on_game_over:
             self.on_game_over(winner, role)
 
-    # ══════════════════════════════════════════════════════════════════════════
     # UTILIDADES
-    # ══════════════════════════════════════════════════════════════════════════
 
     def _log(self, msg: str):
         """Añade una línea al log de eventos."""
