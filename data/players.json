@@ -26,7 +26,7 @@
     "stephany": {
         "username": "Stephany",
         "password": "luna",
-        "wins_defender": 10,
+        "wins_defender": 12,
         "wins_attacker": 0
     },
     "kenia": {
@@ -43,6 +43,18 @@
     },
     "fernanda": {
         "username": "fernanda",
+        "password": "luna",
+        "wins_defender": 0,
+        "wins_attacker": 0
+    },
+    "hazel": {
+        "username": "hazel",
+        "password": "luna",
+        "wins_defender": 0,
+        "wins_attacker": 0
+    },
+    "tatiana": {
+        "username": "tatiana",
         "password": "luna",
         "wins_defender": 0,
         "wins_attacker": 0
