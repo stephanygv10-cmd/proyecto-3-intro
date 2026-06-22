@@ -1,0 +1,180 @@
+[CLIC] phase=build round=1 round_active=True wins_def=0 wins_att=0 units=0
+[CLIC] phase=attack round=1 round_active=True wins_def=0 wins_att=0 units=3
+[COMBAT_TURN] round=1 units=3 alive=3 base_hp=300
+[CHECK_ROUND_END] round=1 alive_units=3 total_units=3 base_hp=300
+[CLIC] phase=combat round=1 round_active=True wins_def=0 wins_att=0 units=3
+[COMBAT_TURN] round=1 units=3 alive=3 base_hp=300
+[CHECK_ROUND_END] round=1 alive_units=3 total_units=3 base_hp=300
+[CLIC] phase=combat round=1 round_active=True wins_def=0 wins_att=0 units=3
+[COMBAT_TURN] round=1 units=3 alive=3 base_hp=300
+[CHECK_ROUND_END] round=1 alive_units=3 total_units=3 base_hp=300
+[CLIC] phase=combat round=1 round_active=True wins_def=0 wins_att=0 units=3
+[COMBAT_TURN] round=1 units=3 alive=3 base_hp=300
+[CHECK_ROUND_END] round=1 alive_units=2 total_units=2 base_hp=300
+[CLIC] phase=combat round=1 round_active=True wins_def=0 wins_att=0 units=2
+[COMBAT_TURN] round=1 units=2 alive=2 base_hp=300
+[CHECK_ROUND_END] round=1 alive_units=2 total_units=2 base_hp=300
+[CLIC] phase=combat round=1 round_active=True wins_def=0 wins_att=0 units=2
+[COMBAT_TURN] round=1 units=2 alive=2 base_hp=300
+[CHECK_ROUND_END] round=1 alive_units=2 total_units=2 base_hp=300
+[CLIC] phase=combat round=1 round_active=True wins_def=0 wins_att=0 units=2
+[COMBAT_TURN] round=1 units=2 alive=2 base_hp=300
+[CHECK_ROUND_END] round=1 alive_units=0 total_units=0 base_hp=300
+[END_ROUND] >>> llamado con winner=defender round=1 wins_def(antes)=0 wins_att(antes)=0 round_active(antes)=True
+[END_ROUND] <<< wins_def(despues)=1 wins_att(despues)=0
+[END_ROUND] -> programando _start_new_round en 1200ms (round actual=1)
+[START_NEW_ROUND] round antes=1 -> despues=2 wins_def=1 wins_att=0
+[CLIC] phase=build round=2 round_active=True wins_def=1 wins_att=0 units=0
+[CLIC] phase=attack round=2 round_active=True wins_def=1 wins_att=0 units=7
+[COMBAT_TURN] round=2 units=7 alive=7 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=7 total_units=7 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=7
+[COMBAT_TURN] round=2 units=7 alive=7 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=7 total_units=7 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=7
+[COMBAT_TURN] round=2 units=7 alive=7 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=6 total_units=6 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=6
+[COMBAT_TURN] round=2 units=6 alive=6 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=6 total_units=6 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=6
+[COMBAT_TURN] round=2 units=6 alive=6 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=5 total_units=5 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=5
+[COMBAT_TURN] round=2 units=5 alive=5 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=5 total_units=5 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=5
+[COMBAT_TURN] round=2 units=5 alive=5 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=4 total_units=4 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=4
+[COMBAT_TURN] round=2 units=4 alive=4 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=4 total_units=4 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=4
+[COMBAT_TURN] round=2 units=4 alive=4 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=3 total_units=3 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=3
+[COMBAT_TURN] round=2 units=3 alive=3 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=3 total_units=3 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=3
+[COMBAT_TURN] round=2 units=3 alive=3 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=2 total_units=2 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=2
+[COMBAT_TURN] round=2 units=2 alive=2 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=2 total_units=2 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=2
+[COMBAT_TURN] round=2 units=2 alive=2 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=1 total_units=1 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=1
+[COMBAT_TURN] round=2 units=1 alive=1 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=1 total_units=1 base_hp=300
+[CLIC] phase=combat round=2 round_active=True wins_def=1 wins_att=0 units=1
+[COMBAT_TURN] round=2 units=1 alive=1 base_hp=300
+[CHECK_ROUND_END] round=2 alive_units=0 total_units=0 base_hp=300
+[END_ROUND] >>> llamado con winner=defender round=2 wins_def(antes)=1 wins_att(antes)=0 round_active(antes)=True
+[END_ROUND] <<< wins_def(despues)=2 wins_att(despues)=0
+[END_ROUND] -> programando _start_new_round en 1200ms (round actual=2)
+[START_NEW_ROUND] round antes=2 -> despues=3 wins_def=2 wins_att=0
+[CLIC] phase=build round=3 round_active=True wins_def=2 wins_att=0 units=0
+[CLIC] phase=attack round=3 round_active=True wins_def=2 wins_att=0 units=7
+[COMBAT_TURN] round=3 units=7 alive=7 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=7 total_units=7 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=7
+[COMBAT_TURN] round=3 units=7 alive=7 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=7 total_units=7 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=7
+[COMBAT_TURN] round=3 units=7 alive=7 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=7 total_units=7 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=7
+[COMBAT_TURN] round=3 units=7 alive=7 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=5 total_units=5 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=5
+[COMBAT_TURN] round=3 units=5 alive=5 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=5 total_units=5 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=5
+[COMBAT_TURN] round=3 units=5 alive=5 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=4 total_units=4 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=4
+[COMBAT_TURN] round=3 units=4 alive=4 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=4 total_units=4 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=4
+[COMBAT_TURN] round=3 units=4 alive=4 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=3 total_units=3 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=3
+[COMBAT_TURN] round=3 units=3 alive=3 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=3 total_units=3 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=3
+[COMBAT_TURN] round=3 units=3 alive=3 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=3 total_units=3 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=3
+[COMBAT_TURN] round=3 units=3 alive=3 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=3 total_units=3 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=3
+[COMBAT_TURN] round=3 units=3 alive=3 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=2 total_units=2 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=2
+[COMBAT_TURN] round=3 units=2 alive=2 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=2 total_units=2 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=2
+[COMBAT_TURN] round=3 units=2 alive=2 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=2 total_units=2 base_hp=300
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=2
+[COMBAT_TURN] round=3 units=2 alive=2 base_hp=300
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=264
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=264
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=252
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=252
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=240
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=240
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=216
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=216
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=204
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=204
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=192
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=192
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=168
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=168
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=156
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=156
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=144
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=144
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=120
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=120
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=108
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=108
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=96
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=96
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=72
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=72
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=60
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=60
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=48
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=48
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=24
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=24
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=12
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=12
+[CHECK_ROUND_END] round=3 alive_units=1 total_units=1 base_hp=0
+[CLIC] phase=combat round=3 round_active=True wins_def=2 wins_att=0 units=1
+[COMBAT_TURN] round=3 units=1 alive=1 base_hp=0
+[BASE_DESTROYED] round=3 -> _end_round(attacker)
+[END_ROUND] >>> llamado con winner=attacker round=3 wins_def(antes)=2 wins_att(antes)=0 round_active(antes)=True
+[END_ROUND] <<< wins_def(despues)=2 wins_att(despues)=1
+[END_ROUND] -> programando _start_new_round en 1200ms (round actual=3)
+[START_NEW_ROUND] round antes=3 -> despues=4 wins_def=2 wins_att=1

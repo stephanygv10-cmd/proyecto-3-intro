@@ -14,8 +14,8 @@
     "luna": {
         "username": "luna",
         "password": "luna",
-        "wins_defender": 1,
-        "wins_attacker": 0
+        "wins_defender": 2,
+        "wins_attacker": 1
     },
     "valeria": {
         "username": "valeria",
@@ -26,7 +26,25 @@
     "stephany": {
         "username": "Stephany",
         "password": "luna",
-        "wins_defender": 5,
+        "wins_defender": 10,
+        "wins_attacker": 0
+    },
+    "kenia": {
+        "username": "kenia",
+        "password": "luna",
+        "wins_defender": 0,
+        "wins_attacker": 1
+    },
+    "maria": {
+        "username": "maria",
+        "password": "luna",
+        "wins_defender": 0,
+        "wins_attacker": 0
+    },
+    "fernanda": {
+        "username": "fernanda",
+        "password": "luna",
+        "wins_defender": 0,
         "wins_attacker": 0
     }
 }

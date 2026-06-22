@@ -82,6 +82,12 @@ class GameWindow:
         self.phase   = "build"      # "build" | "attack" | "combat"
         self.selected_item = None   # nombre del item seleccionado para colocar
 
+        # Evita que clics extra en "Siguiente turno" durante la pausa entre
+        # rondas (los 1200ms de root.after) vuelvan a ejecutar un turno de
+        # combate sobre una ronda que ya terminó, lo que duplicaba/triplicaba
+        # las victorias del marcador sin que se jugara nada.
+        self.round_active = True
+
         # Log de eventos
         self.log_lines: list[str] = []
 
@@ -542,6 +548,7 @@ class GameWindow:
         """Cambia la fase y actualiza la UI."""
         self.phase = phase
         self.selected_item = None
+        self.btn_phase.config(state="normal")  # re-habilitar tras la pausa entre rondas
 
         if phase == "build":
             self.lbl_phase.config(text="📐 FASE: Construcción del Defensor")
@@ -567,9 +574,17 @@ class GameWindow:
 
     def _advance_phase(self):
         """Botón principal: avanza entre fases."""
+        if not self.round_active:
+            # La ronda ya terminó y se está esperando para iniciar la
+            # siguiente; ignorar clics extra del botón.
+            return
+
         if self.phase == "build":
             self._set_phase("attack")
         elif self.phase == "attack":
+            if not self.map.units:
+                self._log("⚠ Debes colocar al menos una unidad antes de iniciar el combate.")
+                return
             self._set_phase("combat")
             self._log("=" * 28)
             self._log(f"⚔ ¡COMBATE INICIADO! Ronda {self.round}")
@@ -579,6 +594,50 @@ class GameWindow:
             self._run_combat_turn()
 
     # COMBATE (turno a turno)
+
+    def _unit_attack_step(self, unit, defenses_in_range: list) -> bool:
+        """
+        Resuelve el ataque de una unidad contra la primera defensa en rango
+        (muro, torre o base), usando su especial si está listo.
+
+        Antes, una unidad que llegaba junto a la base le daba un solo golpe
+        y desaparecía del campo, lo que hacía casi imposible destruir sus
+        300 HP con el presupuesto real de una ronda. Ahora la unidad se
+        queda en su celda y sigue atacando la base turno tras turno, igual
+        que ya hacía contra una torre o muro, mientras siga viva.
+
+        Retorna True si la base fue destruida en este ataque (la ronda ya
+        terminó y el caller debe detener el resto del turno de combate).
+        """
+        target = defenses_in_range[0]
+        is_base = isinstance(target, Base)
+
+        if unit.special_ready:
+            hp_before = target.hp
+            msg = unit.use_special(defenses_in_range)
+            self._log(f"⚡ {msg}")
+            self.special_fx_cells.add((unit.row, unit.col))
+
+            real_dmg = max(0, hp_before - target.hp)
+            if is_base:
+                if real_dmg > 0:
+                    bonus = self.eco_att.reward_base_damage(real_dmg)
+                    self._log(f"💥 (+${bonus} para atacante por daño a la BASE)")
+            else:
+                self.eco_att.reward_damage_tower()
+        else:
+            dmg = unit.attack(target)
+            if is_base:
+                bonus = self.eco_att.reward_base_damage(dmg)
+                self._log(f"💥 {unit.name} golpea la BASE: {dmg} dmg (+${bonus} para atacante)")
+            else:
+                self.eco_att.reward_damage_tower()
+                self._log(f"⚔ {unit.name} → {target.name}: {dmg} dmg")
+
+        if is_base and not self.map.base.is_alive:
+            self._end_round(winner="attacker")
+            return True
+        return False
 
     def _run_combat_turn(self):
         """Ejecuta un turno de combate y actualiza el mapa."""
@@ -639,43 +698,19 @@ class GameWindow:
             defenses_before_move = self.map.defenses_in_range(unit.row, unit.col, 1)
 
             if defenses_before_move:
-                target = defenses_before_move[0]
-                if unit.special_ready:
-                    msg = unit.use_special(defenses_before_move)
-                    self._log(f"⚡ {msg}")
-                    self.special_fx_cells.add((unit.row, unit.col))
-                else:
-                    dmg = unit.attack(target)
-                    self.eco_att.reward_damage_tower()
-                    self._log(f"⚔ {unit.name} → {target.name}: {dmg} dmg")
+                if self._unit_attack_step(unit, defenses_before_move):
+                    return  # la base fue destruida, la ronda ya terminó
                 continue
 
             result_ok, result_msg = self.map.move_unit(unit)
 
-            if result_msg == "reached_base":
-                # La unidad llegó a la base
-                dmg = unit.attack(self.map.base)
-                bonus = self.eco_att.reward_base_damage(dmg)
-                self._log(f"💥 {unit.name} golpea la BASE: {dmg} dmg "
-                           f"(+${bonus} para atacante)")
-                if not self.map.base.is_alive:
-                    self._end_round(winner="attacker")
-                    return
-            else:
-                # Atacar la primera defensa en rango tras moverse
-                # (cubre el caso de que el movimiento la haya acercado
-                # lo suficiente como para atacar en el mismo turno).
-                defenses = self.map.defenses_in_range(unit.row, unit.col, 1)
-                if defenses:
-                    target = defenses[0]
-                    if unit.special_ready:
-                        msg = unit.use_special(defenses)
-                        self._log(f"⚡ {msg}")
-                        self.special_fx_cells.add((unit.row, unit.col))
-                    else:
-                        dmg = unit.attack(target)
-                        self.eco_att.reward_damage_tower()
-                        self._log(f"⚔ {unit.name} → {target.name}: {dmg} dmg")
+            # Atacar la primera defensa en rango tras moverse (cubre el
+            # caso de que el movimiento la haya acercado lo suficiente,
+            # incluyendo haber quedado justo al lado de la base).
+            defenses = self.map.defenses_in_range(unit.row, unit.col, 1)
+            if defenses:
+                if self._unit_attack_step(unit, defenses):
+                    return  # la base fue destruida, la ronda ya terminó
 
         # 3. Limpiar muertos
         removed = self.map.clean_dead()
@@ -712,6 +747,13 @@ class GameWindow:
 
     def _end_round(self, winner: str):
         """Cierra la ronda, actualiza el marcador y decide si la partida termina."""
+        self.round_active = False  # bloquea más turnos hasta que inicie la próxima ronda
+
+        # Deshabilitar el botón físicamente: con varios clics rápidos, un
+        # clic deshabilitado no llega ni a disparar el comando, a diferencia
+        # de solo chequear self.round_active dentro de _advance_phase.
+        self.btn_phase.config(state="disabled", text="⏳ Esperando siguiente ronda...")
+
         if winner == "defender":
             self.wins_def += 1
             self._log(f"🏆 RONDA {self.round}: DEFENSOR gana ({self.wins_def} victorias)")
@@ -721,10 +763,10 @@ class GameWindow:
 
         self._refresh_side_info()
 
-        # ¿Alguien ganó 3 rondas?
-        if self.wins_def >= 3:
+        # ¿Alguien ganó 2 rondas? (mejor de 3: máximo 3 rondas jugadas)
+        if self.wins_def >= 2:
             self._end_game(self.player_def, "defender")
-        elif self.wins_att >= 3:
+        elif self.wins_att >= 2:
             self._end_game(self.player_att, "attacker")
         else:
             # Nueva ronda
@@ -733,6 +775,7 @@ class GameWindow:
     def _start_new_round(self):
         """Prepara el mapa para la siguiente ronda."""
         self.round += 1
+        self.round_active = True
         self.map.reset()
 
         # Dar dinero de inicio de ronda

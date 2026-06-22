@@ -242,19 +242,16 @@ class MapGrid:
                 new_row, new_col = next_row, next_col
                 self.grid[new_row][new_col] = unit
             elif isinstance(cell, Base):
-                # Llegó a la base: la unidad ataca y se retira del campo.
-                # IMPORTANTE: además de liberar su celda en el grid, hay
-                # que sacarla de self.units. Si no, queda "fantasma": ya
-                # no aparece en el mapa, pero el bucle de combate sigue
-                # iterándola turno tras turno y move_unit() vuelve a
-                # devolver "reached_base" indefinidamente, golpeando la
-                # base sin parar y sin que ninguna torre pueda eliminarla
-                # (al no estar en el grid, units_in_range() no la detecta).
-                self.grid[new_row][new_col] = None
+                # Llegó junto a la base: se detiene aquí (no puede entrar
+                # a la celda de la base, igual que con una torre o muro).
+                # A diferencia del comportamiento anterior, la unidad ya
+                # NO desaparece tras un solo golpe: se queda en esta celda,
+                # sigue siendo visible/atacable por las torres del defensor,
+                # y desde aquí atacará a la base turno tras turno mediante
+                # el flujo normal de combate (defenses_in_range), igual que
+                # atacaría a una torre o muro en rango.
                 unit.row, unit.col = new_row, new_col
-                if unit in self.units:
-                    self.units.remove(unit)
-                return True, "reached_base"
+                return True, "moved"
             else:
                 # Obstáculo (torre, muro u otra unidad): se detiene
                 break
