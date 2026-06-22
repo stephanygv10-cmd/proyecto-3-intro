@@ -763,10 +763,12 @@ class GameWindow:
 
         self._refresh_side_info()
 
-        # ¿Alguien ganó 2 rondas? (mejor de 3: máximo 3 rondas jugadas)
-        if self.wins_def >= 2:
+        # El enunciado especifica: "El primer jugador en ganar 3 rondas
+        # gana la partida completa." (no 2 — esto no es un Bo3 clásico,
+        # sino que se juegan hasta 5 rondas como máximo si va 2-2).
+        if self.wins_def >= 3:
             self._end_game(self.player_def, "defender")
-        elif self.wins_att >= 2:
+        elif self.wins_att >= 3:
             self._end_game(self.player_att, "attacker")
         else:
             # Nueva ronda
